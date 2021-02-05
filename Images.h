@@ -1,12 +1,11 @@
 #pragma once
 
-#include<SFML/Graphics.hpp>
 #include<string>
 
-#include<SFML/Audio.hpp>
 #include<iostream>
 
 #include "DragGame.h"
+#include "Window.h"
 
 const std::string ImagePath = "C:/Users/Ivo/source/repos/ConsoleApplication163/ConsoleApplication163/Content/";
 const std::string AudioPath = "C:/Users/Ivo/source/repos/ConsoleApplication163/ConsoleApplication163/Sound/";
@@ -15,6 +14,11 @@ const std::string AudioPath = "C:/Users/Ivo/source/repos/ConsoleApplication163/C
 class Image
 {
 public:
+
+	Image()
+	{
+
+	}
 	void play()
 	{
 		this->player.play();
