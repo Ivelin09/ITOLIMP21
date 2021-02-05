@@ -1,3 +1,5 @@
+#include "DragGame.h"
+
 DragGame::DragGame(const int width, const int height, std::vector<Image>& dropPic,
     std::vector<Image>& dragPic) : Window(width, height, dragPic, "DigitBG.jpg"), dropPic(dropPic)
 {
