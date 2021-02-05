@@ -1,3 +1,5 @@
+#include "Window.h"
+
 Window::Window(const int width, const int height, std::vector<Image>& buttons, const std::string& bg)
     : window(sf::VideoMode(width, height), "Play with me!"), buttons(buttons)
 {
