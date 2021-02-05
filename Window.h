@@ -1,20 +1,20 @@
 #pragma once
-#include "Window.h"
 #include "Images.h"
 
-class DragGame : public Window
+class Window
 {
 public:
-    DragGame(const int width, const int height, std::vector<Image>& dropPic,
-        std::vector<Image>& dragPic);
 
-    void start();
+    Window(const int width, const int height, std::vector<Image>& buttons, const std::string& bg);
 
-private:
-    std::vector<Image> dragPic, dropPic;
+    Image* isClicked(const sf::RenderWindow& window);
 
-    sf::Texture fileBG;
+protected:
+    std::vector<Image> buttons;
+    sf::RenderWindow window;
 
-    const int additionalSpace = 200;
     sf::Sprite background;
+    sf::Texture bg;
+
+    int saveIndex;
 };
