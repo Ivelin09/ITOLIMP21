@@ -1,11 +1,14 @@
 #pragma once
-#include "Images.h"
+
+#include<vector>
+#include <SFML/Graphics.hpp>
 
 class Window
 {
 public:
 
-    Window(const int width, const int height, std::vector<Image>& buttons, const std::string& bg);
+    Window(const int width, const int height, 
+        std::vector<Image>& buttons, const std::string& bg);
 
     Image* isClicked(const sf::RenderWindow& window);
 
