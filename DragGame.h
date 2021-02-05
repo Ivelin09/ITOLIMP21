@@ -1,8 +1,10 @@
 #pragma once
-#include "Window.h"
-#include "Images.h"
 
-class DragGame : public Window
+#include<vector>
+
+#include<SFML/Audio.hpp>
+#include <SFML/Graphics.hpp>
+class DragGame
 {
 public:
     DragGame(const int width, const int height, std::vector<Image>& dropPic,
@@ -17,4 +19,5 @@ private:
 
     const int additionalSpace = 200;
     sf::Sprite background;
+    sf::RenderWindow window;
 };
