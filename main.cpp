@@ -1,137 +1,144 @@
-#include <SFML/Graphics.hpp>
 #include<iostream>
+#include <SFML/Graphics.hpp>
+
+#include <iostream>
+#include <SFML/Graphics.hpp>
+
+#include "Images.h"
+#include "DragGame.h"
 
 #include<vector>
+#include<utility>
 
-#include <SFML/Audio/Sound.hpp>
-#include <SFML/Audio.hpp>
+sf::RenderWindow window(sf::VideoMode(width, height), "Play with me!");
 
-#include "Window.h"
-#include "Images.h"
+const int width = 1640;
+const int height = 640;
 
-const int width = 1024, height = 768;
-
-class DragGame : public Window
+class Singleton
 {
 public:
-    DragGame() : Window(width, height, "DigitBG.jpg") {}
-    virtual Window* start() override
-    {
-        Image* movingObj = nullptr;
+	static Singleton& get()
+	{
+		return obj;
+	}
 
-        sf::Vector2f back;
-        bool hold = false;
+	Singleton(const Singleton&) = delete;
+	void operator=(const Singleton&) = delete;
 
-        sf::Vector2f oldPos;
+	 sf::SoundBuffer correctSound, incorrectSound;
+	 sf::Sound correct, incorrect;
 
-        while (window.isOpen())
-        {
-            sf::Event event;
-            while (window.pollEvent(event))
-            {
-                if (event.type == sf::Event::MouseButtonPressed)
-                {
-                    window.close();
-                }
-                else if (event.type == sf::Event::MouseButtonPressed) {
+	 Image zero, one, two, three, four, five, six, seven, eight, nine;
+	 Image zeroPlace, onePlace, twoPlace, threePlace;
 
-                    const sf::Vector2f mouseCords = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-                    for (int i = 0; i < buttons.size(); i++) {
-                        sf::Vector2f size = buttons[i].getShape().getSize();
-                        sf::Vector2f position = buttons[i].getShape().getPosition();
-
-                        if (mouseCords.x >= position.x && mouseCords.x <= position.x + size.x &&
-                            mouseCords.y >= position.y && mouseCords.y <= position.y + size.y) {
-                            this->saveIndex = i;
-                            movingObj = &this->buttons[i];
-                        }
-                    }
-                }
-                else if (hold && event.type == sf::Event::MouseMoved) {
-
-                    const sf::Vector2f mouseCords = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-
-                    sf::Vector2f cornerX = movingObj->getShape().getPosition();
-                    sf::Vector2f cornerY = sf::Vector2f(movingObj->getShape().getPosition().x + movingObj->getShape().getSize().x,
-                        movingObj->getShape().getPosition().y + movingObj->getShape().getSize().y);
-
-
-                    movingObj->getShape().setPosition(movingObj->getShape().getPosition().x - oldPos.x + mouseCords.x, movingObj->getShape().getPosition().y - oldPos.y + mouseCords.y);
-                    for (int w = 0; w < this->buttons.size(); w++)
-                    {
-                        sf::Vector2u size1(movingObj->getShape().getSize().x, movingObj->getShape().getSize().y);
-                        sf::Vector2f position1 = dropPic[w].getShape().getPosition();
-
-
-                        if ((cornerX.x >= position1.x &&
-                            cornerX.x <= position1.x + size1.x && cornerX.y >= position1.y && cornerX.y <= position1.y + size1.y) ||
-                            (cornerY.x >= position1.x && cornerY.x <= position1.x + size1.x && cornerY.y >= position1.y && cornerY.y <= position1.y + size1.y) ||
-                            (cornerX.x >= position1.x && cornerX.x <= position1.x + size1.x && cornerY.y >= position1.y && cornerY.y <= position1.y + size1.y) ||
-                            (cornerY.x >= position1.x && cornerY.x <= position1.x + size1.x && cornerX.y >= position1.y && cornerX.y <= position1.y + size1.y))
-                        {
-                            if (this->saveIndex == w) {
-                                movingObj->play();
-                                movingObj->getShape().setPosition(dropPic[w].getShape().getPosition());
-                            }
-                            else {
-                                //incorrect.play();
-                                movingObj->getShape().setPosition(back);
-
-                                hold = false;
-                            }
-                        }
-                    }
-                    oldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-                }
-            }
-
-            this->window.clear();
-            this->window.draw(this->background);
-
-            for (int i = 0; i < dropPic.size(); i++)
-                this->window.draw(dropPic[i].getShape());
-
-            for (int i = 0; i < this->buttons.size(); i++)
-                this->window.draw(this->buttons[i].getShape());
-
-            window.display();
-        }
-
-        return nextWindow();
-    }
-    ~DragGame()
-    {
-        std::cout << "call\n";
-    }
-    virtual void play()
-    {
-
-    }
-
-    virtual Window* nextWindow()
-    {
-        return nullptr;
-    }
-
+	 std::vector<Image> dragPic, dropPic;
+	 std::vector<std::pair<sf::RectangleShape, DragGame*>> digits;
 private:
-    int saveIndex;
-    std::vector<Image> dropPic;
+	Singleton()
+	{
+		zero.setTexture("zero.png");
+
+		zero.getShape().getTexture()->getSize();
+		zeroPlace.setTexture("zeroPlace.png");
+
+		zero.setSound("zero.wav");
+
+		one.setTexture("one.png");
+		onePlace.setTexture("onePlace.png");
+
+		one.setSound("one.wav");
+
+		two.setTexture("two.png");
+		twoPlace.setTexture("twoPlace.png");
+
+		two.setSound("two.wav");
+
+		three.setTexture("three.png");
+		threePlace.setTexture("threePlace.png");
+
+		three.setSound("three.wav");
+
+		// Audio
+		correctSound.loadFromFile(AudioPath + "correct.wav");
+		correct.setBuffer(correctSound);
+
+		incorrectSound.loadFromFile(AudioPath + "incorrect.wav");
+		incorrect.setBuffer(incorrectSound);
+
+		//BUTTONS
+
+		sf::RectangleShape button(sf::Vector2f(100, 100));
+		button.setPosition(sf::Vector2f(window.getSize().x / 2,
+			window.getSize().y/2));
+
+		// Digit Game Level 1
+
+		dragPic.push_back(zero);
+		dragPic.push_back(one);
+		dragPic.push_back(two);
+		dragPic.push_back(three);
+
+		dropPic.push_back(zeroPlace);
+		dropPic.push_back(onePlace);
+		dropPic.push_back(twoPlace);
+		dropPic.push_back(threePlace);
+
+		DragGame* GameLevel1 = new DragGame(window, dragPic, dropPic);
+		digits.push_back({ button, GameLevel1 });
+
+		dragPic.clear();
+		dropPic.clear();
+	}
+
+	~Singleton()
+	{
+
+	}
+
+	static Singleton obj;
 };
-Window* ptr;
 
-int main() {
+Singleton Singleton::obj;
 
-    ptr = new DragGame;
-    Window* save = nullptr;
+int main()
+{
+	sf::Texture file;
+	sf::Sprite bg;
 
-    while (ptr)
-    {
-        save = ptr;
-        ptr = ptr->start();
+	const Singleton& obj = Singleton::get();
 
-        delete save;
-    }
+	file.loadFromFile(ImagePath + "DigitBG.jpg");
+	bg.setTexture(file);
 
-    return 0;
+	while (window.isOpen())
+	{
+		sf::Event e;
+		while (window.pollEvent(e))
+		{
+			if (e.type == sf::Event::MouseButtonPressed)
+			{
+				const sf::Vector2f mouseCords = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+				for (int i = 0; i < obj.digits.size(); i++) 
+				{
+					auto objCords = obj.digits[i].first.getPosition();
+					auto objSize = obj.digits[i].first.getSize();
+
+					if (mouseCords.x >= objCords.x && mouseCords.x <= objCords.x + objSize.x &&
+						mouseCords.y >= objCords.y && mouseCords.y <= objCords.y + objSize.y)
+					{
+						obj.digits[i].second->start();
+					}
+				}
+			}
+		}
+
+		window.clear();
+		window.draw(bg);
+
+		for (const auto& k : obj.digits)
+			window.draw(k.first);
+
+		window.display();
+	}
 }
-
