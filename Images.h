@@ -14,82 +14,44 @@ class Image
 {
 public:
 
-	Image()
-	{
+    Image()
+    {
 
-	}
-	void play()
-	{
-		this->player.play();
-	}
+    }
+    void play()
+    {
+        this->player.play();
+    }
 
-	void setTexture(const std::string& texture)
-	{
-		if (!this->texture.loadFromFile(ImagePath + texture))
-			std::cout << "problem \n";
-		shape.setTexture(&this->texture);
-	}
+    void setTexture(const std::string& texture)
+    {
+        if (!this->texture.loadFromFile(ImagePath + texture))
+            std::cout << "problem \n";
+        shape.setTexture(&this->texture);
+    }
 
-	void setSound(const std::string& sound)
-	{
-		this->sound.loadFromFile(AudioPath + sound);
-		player.setBuffer(this->sound);
-	}
+    void setSound(const std::string& sound)
+    {
+        this->sound.loadFromFile(AudioPath + sound);
+        player.setBuffer(this->sound);
+    }
 
-	sf::RectangleShape& getShape()
-	{
-		return this->shape;
-	}
+    sf::RectangleShape& getShape()
+    {
+        return this->shape;
+    }
+
+    ~Image()
+    {
+
+    }
 
 private:
-	sf::Texture texture;
-	sf::RectangleShape shape;
+    sf::Texture texture;
+    sf::RectangleShape shape;
 
-	sf::SoundBuffer sound;
-	sf::Sound player;
+    sf::SoundBuffer sound;
+    sf::Sound player;
 };
 
-sf::SoundBuffer correctSound, incorrectSound;
-sf::Sound correct, incorrect;
-
-Image zero, one, two, three, four, five, six, seven, eight, nine;
-Image zeroPlace, onePlace, twoPlace, threePlace;
-
-void initializeImages()
-{
-	// IMAGES
-
-	zero.setTexture("zero.png");
-
-	zero.getShape().getTexture()->getSize();
-
-	zeroPlace.setTexture("zeroPlace.png");
-
-	zero.setSound("zero.wav");
-
-	one.setTexture("one.png");
-	onePlace.setTexture("onePlace.png");
-
-	one.setSound("one.wav");
-
-	two.setTexture("two.png");
-	twoPlace.setTexture("twoPlace.png");
-
-	two.setSound("two.wav");
-
-	three.setTexture("three.png");
-	threePlace.setTexture("threePlace.png");
-
-	three.setSound("three.wav");
-
-	// Audio
-	correctSound.loadFromFile(AudioPath + "correct.wav");
-	correct.setBuffer(correctSound);
-
-	incorrectSound.loadFromFile(AudioPath + "incorrect.wav");
-	incorrect.setBuffer(incorrectSound);
-
-}
 #endif
-
-
