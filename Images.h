@@ -38,7 +38,7 @@ public:
 
 	sf::RectangleShape& getShape()
 	{
-	 	return this->shape;
+		return this->shape;
 	}
 
 private:
@@ -91,3 +91,5 @@ void initializeImages()
 
 }
 #endif
+
+
