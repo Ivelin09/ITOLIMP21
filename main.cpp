@@ -2,72 +2,135 @@
 #include<iostream>
 
 #include<vector>
-#include "Images.h"
 
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Audio.hpp>
 
+#include "Window.h"
+#include "Images.h"
+
 const int width = 1024, height = 768;
 
-enum WINDOW_TYPE {DigitGame, CLOSED};
-
-int main() {
-    initializeImages();
-
-    sf::RenderWindow window(sf::VideoMode(1920, 1200), "Play with me!");
-
-    sf::Texture bg, button;
-    bg.loadFromFile(ImagePath + "menuBg.jpg");
-    button.loadFromFile(ImagePath + "buttonDigits.png");
-
-    sf::Sprite background;
-    background.setTexture(bg);
-
-    int additionalSpace = 150;
-
-    sf::RectangleShape digitButton(sf::Vector2f(500, 210));
-    digitButton.setPosition(1920 / 2 - digitButton.getSize().x / 2, 1200 / 2 - digitButton.getSize().y / 2 - additionalSpace);
-
-    std::vector<std::pair< WINDOW_TYPE , sf::RectangleShape>> buttons;
-    buttons.emplace_back(DigitGame, digitButton);
-
-    digitButton.setTexture(&button);
-
-    while (window.isOpen())
+class DragGame : public Window
+{
+public:
+    DragGame() : Window(width, height, "DigitBG.jpg") {}
+    virtual Window* start() override
     {
-        sf::Event event;
+        Image* movingObj = nullptr;
 
-        while (window.pollEvent(event))
+        sf::Vector2f back;
+        bool hold = false;
+
+        sf::Vector2f oldPos;
+
+        while (window.isOpen())
         {
-            if (event.type == sf::Event::Closed)
-                window.close();
+            sf::Event event;
+            while (window.pollEvent(event))
+            {
+                if (event.type == sf::Event::MouseButtonPressed)
+                {
+                    window.close();
+                }
+                else if (event.type == sf::Event::MouseButtonPressed) {
 
-            if (event.type == sf::Event::MouseButtonPressed) {
-                const sf::Vector2f mouseCords = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                    const sf::Vector2f mouseCords = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                    for (int i = 0; i < buttons.size(); i++) {
+                        sf::Vector2f size = buttons[i].getShape().getSize();
+                        sf::Vector2f position = buttons[i].getShape().getPosition();
 
-                for (int i = 0; i < buttons.size(); i++) {
-                    if (mouseCords.x >= buttons[i].second.getPosition().x &&
-                        mouseCords.x <= buttons[i].second.getPosition().x + buttons[i].second.getSize().x &&
-                        mouseCords.y >= buttons[i].second.getPosition().y &&
-                        mouseCords.y <= buttons[i].second.getPosition().y + buttons[i].second.getSize().y)
-                    {
-                        if (buttons[i].first == DigitGame)
-                        {
-
+                        if (mouseCords.x >= position.x && mouseCords.x <= position.x + size.x &&
+                            mouseCords.y >= position.y && mouseCords.y <= position.y + size.y) {
+                            this->saveIndex = i;
+                            movingObj = &this->buttons[i];
                         }
                     }
                 }
+                else if (hold && event.type == sf::Event::MouseMoved) {
+
+                    const sf::Vector2f mouseCords = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
+                    sf::Vector2f cornerX = movingObj->getShape().getPosition();
+                    sf::Vector2f cornerY = sf::Vector2f(movingObj->getShape().getPosition().x + movingObj->getShape().getSize().x,
+                        movingObj->getShape().getPosition().y + movingObj->getShape().getSize().y);
+
+
+                    movingObj->getShape().setPosition(movingObj->getShape().getPosition().x - oldPos.x + mouseCords.x, movingObj->getShape().getPosition().y - oldPos.y + mouseCords.y);
+                    for (int w = 0; w < this->buttons.size(); w++)
+                    {
+                        sf::Vector2u size1(movingObj->getShape().getSize().x, movingObj->getShape().getSize().y);
+                        sf::Vector2f position1 = dropPic[w].getShape().getPosition();
+
+
+                        if ((cornerX.x >= position1.x &&
+                            cornerX.x <= position1.x + size1.x && cornerX.y >= position1.y && cornerX.y <= position1.y + size1.y) ||
+                            (cornerY.x >= position1.x && cornerY.x <= position1.x + size1.x && cornerY.y >= position1.y && cornerY.y <= position1.y + size1.y) ||
+                            (cornerX.x >= position1.x && cornerX.x <= position1.x + size1.x && cornerY.y >= position1.y && cornerY.y <= position1.y + size1.y) ||
+                            (cornerY.x >= position1.x && cornerY.x <= position1.x + size1.x && cornerX.y >= position1.y && cornerX.y <= position1.y + size1.y))
+                        {
+                            if (this->saveIndex == w) {
+                                movingObj->play();
+                                movingObj->getShape().setPosition(dropPic[w].getShape().getPosition());
+                            }
+                            else {
+                                incorrect.play();
+                                movingObj->getShape().setPosition(back);
+
+                                hold = false;
+                            }
+                        }
+                    }
+                    oldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                }
             }
+
+            this->window.clear();
+            this->window.draw(this->background);
+
+            for (int i = 0; i < dropPic.size(); i++)
+                this->window.draw(dropPic[i].getShape());
+
+            for (int i = 0; i < this->buttons.size(); i++)
+                this->window.draw(this->buttons[i].getShape());
+
+            window.display();
         }
 
-        window.clear();
-
-        window.draw(background);
-        for (int i = 0; i < buttons.size(); i++)
-            window.draw(buttons[i].second);
-
-        window.display();
+        return nextWindow();
     }
-    (std::cout << "text" << std::endl);
+    ~DragGame() 
+    {
+        std::cout << "call\n";
+    }
+    virtual void play()
+    {
+
+    }
+
+    virtual Window* nextWindow()
+    {
+        return nullptr;
+    }
+
+private:
+    int saveIndex;
+    std::vector<Image> dropPic;
+};
+Window* ptr;
+
+int main() {
+
+    ptr = new DragGame;
+    Window* save = nullptr;
+
+    while (ptr)
+    {
+        save = ptr;
+        ptr = ptr->start();
+
+        delete save;
+    }
+
     return 0;
 }
