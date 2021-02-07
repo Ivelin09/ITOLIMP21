@@ -1,15 +1,14 @@
-#pragma once
+#ifndef IMAGES
+#define IMAGES
 
 #include<string>
-
 #include<iostream>
 
-#include "DragGame.h"
-#include "Window.h"
+#include <SFML/Audio.hpp>
+#include <SFML/Graphics.hpp>
 
 const std::string ImagePath = "C:/Users/Ivo/source/repos/ConsoleApplication163/ConsoleApplication163/Content/";
 const std::string AudioPath = "C:/Users/Ivo/source/repos/ConsoleApplication163/ConsoleApplication163/Sound/";
-
 
 class Image
 {
@@ -37,9 +36,9 @@ public:
 		player.setBuffer(this->sound);
 	}
 
-    sf::RectangleShape& getShape()
+	sf::RectangleShape& getShape()
 	{
-		return this->shape;
+	 	return this->shape;
 	}
 
 private:
@@ -56,16 +55,9 @@ sf::Sound correct, incorrect;
 Image zero, one, two, three, four, five, six, seven, eight, nine;
 Image zeroPlace, onePlace, twoPlace, threePlace;
 
-
-void initializeWindows()
-{
-	
-};
-
 void initializeImages()
 {
 	// IMAGES
-	const int width = 160, height = 160;
 
 	zero.setTexture("zero.png");
 
@@ -98,3 +90,4 @@ void initializeImages()
 	incorrect.setBuffer(incorrectSound);
 
 }
+#endif
