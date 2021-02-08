@@ -73,3 +73,5 @@ Singleton::Singleton()
 	dragPic.clear();
 	dropPic.clear();
 }
+
+Singleton Singleton::obj;
