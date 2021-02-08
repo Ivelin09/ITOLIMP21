@@ -9,11 +9,12 @@
 extern const int width;
 extern const int height;
 
+class Singleton;
+
 class DragGame
 {
 public:
-    DragGame(sf::RenderWindow& window, std::vector<Image>& dropPic,
-        std::vector<Image>& dragPic) : window(window), dropPic(dropPic), dragPic(dragPic), saveIndex(-1)
+    DragGame(sf::RenderWindow& window, std::vector<Image>& dragPic, std::vector<Image>& dropPic) : window(window), dropPic(dropPic), dragPic(dragPic), saveIndex(-1)
     {
         double substractedWidth = width - (dragPic[0].getShape().getSize().x * dragPic.size());
         double deltaWidth = substractedWidth / (dragPic.size() * 2);
@@ -38,7 +39,7 @@ public:
 
             currPos += deltaWidth + dropPic[i].getShape().getSize().x;
         }
-        file.loadFromFile("DigitBg.jpg");
+        file.loadFromFile(ImagePath + "DigitBg.jpg");
         background.setTexture(file);
     }
 
@@ -53,15 +54,12 @@ public:
 
         while (window.isOpen())
         {
-            window.clear();
             sf::Event event;
             while (window.pollEvent(event))
             {
-                if (event.type == sf::Event::MouseButtonPressed)
-                {
+                if (event.type == sf::Event::Closed)
                     window.close();
-                }
-                else if (event.type == sf::Event::MouseButtonPressed) {
+                if (event.type == sf::Event::MouseButtonPressed) {
 
                     const sf::Vector2f mouseCords = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                     for (int i = 0; i < dragPic.size(); i++) {
@@ -72,7 +70,11 @@ public:
                             mouseCords.y >= position.y && mouseCords.y <= position.y + size.y) {
                             this->saveIndex = i;
                             movingObj = &this->dragPic[i];
+
+                            back = movingObj->getShape().getPosition();
+                            hold = true;
                         }
+                        oldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                     }
                 }
                 else if (hold && event.type == sf::Event::MouseMoved) {
@@ -90,7 +92,6 @@ public:
                         sf::Vector2u size1(movingObj->getShape().getSize().x, movingObj->getShape().getSize().y);
                         sf::Vector2f position1 = dropPic[w].getShape().getPosition();
 
-
                         if ((cornerX.x >= position1.x &&
                             cornerX.x <= position1.x + size1.x && cornerX.y >= position1.y && cornerX.y <= position1.y + size1.y) ||
                             (cornerY.x >= position1.x && cornerY.x <= position1.x + size1.x && cornerY.y >= position1.y && cornerY.y <= position1.y + size1.y) ||
@@ -102,7 +103,7 @@ public:
                                 movingObj->getShape().setPosition(dropPic[w].getShape().getPosition());
                             }
                             else {
-                                //incorrect.play();
+                                
                                 movingObj->getShape().setPosition(back);
 
                                 hold = false;
@@ -111,16 +112,25 @@ public:
                     }
                     oldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                 }
+                else if (event.type == sf::Event::MouseButtonReleased)
+                {
+                    hold = false;
+                    movingObj = nullptr;
+                }
             }
 
-            this->window.clear();
+            window.clear();
 
-            this->window.draw(this->background);
-            for (int i = 0; i < dropPic.size(); i++)
-                this->window.draw(dropPic[i].getShape());
+            window.draw(this->background);
+
+            window.draw(Singleton::get().backArrow.getShape());
+            window.draw(Singleton::get().nextArrow.getShape());
 
             for (int i = 0; i < this->dragPic.size(); i++)
-                this->window.draw(this->dragPic[i].getShape());
+                window.draw(this->dragPic[i].getShape());
+
+            for (int i = 0; i < dropPic.size(); i++)
+                window.draw(dropPic[i].getShape());
 
             window.display();
         }
@@ -136,8 +146,8 @@ private:
     int saveIndex;
     std::vector<Image> dropPic, dragPic;
 
-    sf::RenderWindow &window;
-    
+    sf::RenderWindow& window;
+
     sf::Texture file;
     sf::Sprite background;
 };
