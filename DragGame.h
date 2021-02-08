@@ -9,7 +9,6 @@
 extern const int width;
 extern const int height;
 
-class Singleton;
 
 class DragGame
 {
@@ -103,9 +102,8 @@ public:
                                 movingObj->getShape().setPosition(dropPic[w].getShape().getPosition());
                             }
                             else {
-                                
-                                movingObj->getShape().setPosition(back);
 
+                                movingObj->getShape().setPosition(back);
                                 hold = false;
                             }
                         }
@@ -120,12 +118,10 @@ public:
             }
 
             window.clear();
-
+            
             window.draw(this->background);
 
-            window.draw(Singleton::get().backArrow.getShape());
-            window.draw(Singleton::get().nextArrow.getShape());
-
+            
             for (int i = 0; i < this->dragPic.size(); i++)
                 window.draw(this->dragPic[i].getShape());
 
