@@ -28,6 +28,7 @@ public:
         if (!this->texture.loadFromFile(ImagePath + texture))
             std::cout << "problem \n";
         shape.setTexture(&this->texture);
+        shape.setSize(sf::Vector2f(200, 200));
     }
 
     void setSound(const std::string& sound)
