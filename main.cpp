@@ -1,6 +1,3 @@
-#include<iostream>
-#include <SFML/Graphics.hpp>
-
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
@@ -32,6 +29,8 @@ public:
 	 Image zero, one, two, three, four, five, six, seven, eight, nine;
 	 Image zeroPlace, onePlace, twoPlace, threePlace;
 
+	 Image backArrow, nextArrow;
+
 	 std::vector<Image> dragPic, dropPic;
 	 std::vector<std::pair<sf::RectangleShape, DragGame*>> digits;
 private:
@@ -56,10 +55,18 @@ private:
 
 		three.setTexture("three.png");
 		threePlace.setTexture("threePlace.png");
+		// Audio
+
+		zero.setSound("zero.wav");
+
+		one.setSound("one.wav");
+
+		two.setSound("two.wav");
+
+		two.setSound("two.wav");
 
 		three.setSound("three.wav");
 
-		// Audio
 		correctSound.loadFromFile(AudioPath + "correct.wav");
 		correct.setBuffer(correctSound);
 
@@ -71,6 +78,9 @@ private:
 		sf::RectangleShape button(sf::Vector2f(100, 100));
 		button.setPosition(sf::Vector2f(window.getSize().x / 2,
 			window.getSize().y/2));
+
+		backArrow.setTexture("backArrow.png");
+		nextArrow.setTexture("nextArrow.png");
 
 		// Digit Game Level 1
 
@@ -98,7 +108,6 @@ private:
 
 	static Singleton obj;
 };
-
 Singleton Singleton::obj;
 
 int main()
@@ -136,9 +145,14 @@ int main()
 		window.clear();
 		window.draw(bg);
 
+		window.draw(obj.get().zero.getShape());
+
 		for (const auto& k : obj.digits)
 			window.draw(k.first);
 
 		window.display();
 	}
+
+	for (int i = 0; i < obj.digits.size(); i++)
+		delete obj.digits[i].second;
 }
